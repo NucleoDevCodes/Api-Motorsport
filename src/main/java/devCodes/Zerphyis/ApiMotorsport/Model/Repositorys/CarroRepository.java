@@ -1,6 +1,6 @@
 package devCodes.Zerphyis.ApiMotorsport.Model.Repositorys;
 
-import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro;
+import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro.Carro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
