@@ -1,4 +1,4 @@
-package devCodes.Zerphyis.ApiMotorsport.Model.Entity;
+package devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
