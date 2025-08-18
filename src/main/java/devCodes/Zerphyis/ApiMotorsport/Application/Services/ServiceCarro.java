@@ -1,0 +1,77 @@
+package devCodes.Zerphyis.ApiMotorsport.Application.Services;
+
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroRequest;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroResponse;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.ResourceNotFoundException;
+import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro.Carro;
+import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.CarroRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ServiceCarro {
+
+    private CarroRepository repository;
+
+    @Transactional
+    public DataCarroResponse save(DataCarroRequest dto){
+        Carro carro= new Carro();
+        carro.setNome(dto.nome());
+        carro.setModelo(dto.modelo());
+        carro.setDescricao(dto.descricao());
+        carro.setPreco(dto.preco());
+        carro.setImagemUrl(dto.imagemUrl());
+        carro.setOrdem(dto.ordem());
+        return  toResponse(repository.save(carro));
+    }
+
+    @Transactional
+    public DataCarroResponse update(Long id , DataCarroRequest dto){
+        Carro carro = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado com ID " + id));
+        carro.setNome(dto.nome());
+        carro.setModelo(dto.modelo());
+        carro.setDescricao(dto.descricao());
+        carro.setPreco(dto.preco());
+        carro.setImagemUrl(dto.imagemUrl());
+        carro.setOrdem(dto.ordem());
+        return toResponse(repository.save(carro));
+    }
+
+    public List<DataCarroResponse> findAll(){
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public DataCarroResponse findByid(Long id){
+        Carro carro = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado com o id"));
+        return toResponse(carro);
+    }
+
+    @Transactional
+    public void delete(Long id){
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Carro não encontrado com ID " + id);
+        }
+        repository.deleteById(id);
+    }
+
+
+
+    private DataCarroResponse toResponse(Carro carro){
+        return new DataCarroResponse(
+                carro.getNome(),
+                carro.getModelo(),
+                carro.getDescricao(),
+                carro.getPreco(),
+                carro.getImagemUrl(),
+                carro.getOrdem()
+        );
+    }
+}
