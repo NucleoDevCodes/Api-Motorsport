@@ -15,13 +15,21 @@ import org.springframework.web.bind.annotation.*;
 public class ControllerConteudo {
     private final ServiceConteudo sobreService;
 
-    @GetMapping
-    public ResponseEntity<DataConteudoResponse> getConteudo() {
-        return ResponseEntity.ok(sobreService.getConteudo());
+    @GetMapping("/{id}")
+    public ResponseEntity<DataConteudoResponse> getConteudo(@PathVariable Long id) {
+        return ResponseEntity.ok(sobreService.getConteudo(id));
     }
 
-    @PutMapping
-    public ResponseEntity<DataConteudoResponse> atualizarConteudo(@Valid @RequestBody DataConteudoRequest dto) {
-        return ResponseEntity.ok(sobreService.atualizarConteudo(dto));
+    @PutMapping("/{id}")
+    public ResponseEntity<DataConteudoResponse> atualizarConteudo(
+            @PathVariable Long id,
+            @Valid @RequestBody DataConteudoRequest dto) {
+        return ResponseEntity.ok(sobreService.atualizarConteudo(id, dto));
+    }
+
+    @PostMapping
+    public ResponseEntity<DataConteudoResponse> adicionarConteudo(@Valid @RequestBody DataConteudoRequest dto) {
+        return ResponseEntity.ok(sobreService.adicionarConteudo(dto));
     }
 }
+

@@ -1,6 +1,7 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
 
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,12 +18,12 @@ public class ServiceUpload {
 
     public String uploadFile(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new FileUploadException("Arquivo vazio");
+            throw new BadRequestException("Arquivo vazio");
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || !originalFilename.matches(".*\\.(png|jpg|jpeg)$")) {
-            throw new FileUploadException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
+            throw new BadRequestException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
         }
 
         try {

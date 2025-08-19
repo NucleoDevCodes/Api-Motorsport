@@ -2,6 +2,7 @@ package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroRequest;
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroResponse;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.ResourceNotFoundException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro.Carro;
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.CarroRepository;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServiceCarro {
 
-    private CarroRepository repository;
+    private final  CarroRepository repository;
 
     @Transactional
     public DataCarroResponse save(DataCarroRequest dto){
@@ -32,7 +33,7 @@ public class ServiceCarro {
     @Transactional
     public DataCarroResponse update(Long id , DataCarroRequest dto){
         Carro carro = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado com ID " + id));
+                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + id));
         carro.setNome(dto.nome());
         carro.setModelo(dto.modelo());
         carro.setDescricao(dto.descricao());
@@ -50,14 +51,14 @@ public class ServiceCarro {
     }
 
     public DataCarroResponse findByid(Long id){
-        Carro carro = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado com o id"));
+        Carro carro = repository.findById(id).orElseThrow(() -> new NotFoundException("Carro não encontrado com o id"));
         return toResponse(carro);
     }
 
     @Transactional
     public void delete(Long id){
         if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Carro não encontrado com ID " + id);
+            throw new NotFoundException("Carro não encontrado com ID " + id);
         }
         repository.deleteById(id);
     }
