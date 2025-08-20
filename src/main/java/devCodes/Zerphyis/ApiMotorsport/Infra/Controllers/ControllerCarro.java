@@ -15,31 +15,31 @@ import java.util.List;
 @RequestMapping("/carros")
 @RequiredArgsConstructor
 public class ControllerCarro {
-    private final ServiceCarro carroService;
+    private final ServiceCarro service;
 
     @GetMapping
-    public ResponseEntity<List<DataCarroResponse>> getAll() {
-        return ResponseEntity.ok(carroService.findAll());
+    public ResponseEntity<List<DataCarroResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataCarroResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(carroService.findByid(id));
+    public ResponseEntity<DataCarroResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<DataCarroResponse> create(@Valid @RequestBody DataCarroRequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(carroService.save(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DataCarroResponse> update(@PathVariable Long id, @Valid @RequestBody DataCarroRequest dto) {
-        return ResponseEntity.ok(carroService.update(id, dto));
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        carroService.delete(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
