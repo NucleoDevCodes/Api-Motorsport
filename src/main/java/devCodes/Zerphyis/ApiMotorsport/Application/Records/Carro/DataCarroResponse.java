@@ -1,4 +1,4 @@
-package devCodes.Zerphyis.ApiMotorsport.Application.Records;
+package devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro;
 
 import java.math.BigDecimal;
 
