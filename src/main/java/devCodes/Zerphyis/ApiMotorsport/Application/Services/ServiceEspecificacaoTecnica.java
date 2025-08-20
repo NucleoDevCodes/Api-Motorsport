@@ -1,8 +1,7 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataEspecificacaoTecnicaRequest;
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataEspecificacaoTecnicaResponse;
-import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.EntityNotFoundException;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao.DataEspecificacaoTecnicaRequest;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao.DataEspecificacaoTecnicaResponse;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Carro.Carro;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Especificao.EspecificacaoTecnica;
@@ -10,8 +9,6 @@ import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.CarroRepository;
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.EspecificacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 
 @Service
