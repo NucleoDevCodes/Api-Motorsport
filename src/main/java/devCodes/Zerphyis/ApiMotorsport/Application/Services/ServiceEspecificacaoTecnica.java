@@ -9,62 +9,60 @@ import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.CarroRepository;
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.EspecificacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
 public class ServiceEspecificacaoTecnica {
 
-    private final EspecificacaoRepository especificacaoTecnicaRepository;
+
+    private final EspecificacaoRepository especificacaoRepository;
     private final CarroRepository carroRepository;
 
-    public DataEspecificacaoTecnicaResponse criar(DataEspecificacaoTecnicaRequest dto) {
-        Carro carro = carroRepository.findById(dto.carroId()).orElseThrow(() -> new NotFoundException("Carro não encontrado com id: " + dto.carroId()));
+    @Transactional
+    public DataEspecificacaoTecnicaResponse create(DataEspecificacaoTecnicaRequest dto) {
+        Carro carro = carroRepository.findById(dto.carroId())
+                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
 
         EspecificacaoTecnica especificacao = new EspecificacaoTecnica();
-
         especificacao.setCarro(carro);
         especificacao.setTitulo(dto.titulo());
         especificacao.setValor(dto.valor());
 
-        especificacao = especificacaoTecnicaRepository.save(especificacao);
-
-        return toResponseDTO(especificacao);
+        return toResponse(especificacaoRepository.save(especificacao));
     }
 
-    public DataEspecificacaoTecnicaResponse atualizar(Long id,DataEspecificacaoTecnicaRequest dto){
-        EspecificacaoTecnica especificacao = especificacaoTecnicaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com id: " + id));
+    @Transactional
+    public DataEspecificacaoTecnicaResponse update(Long id, DataEspecificacaoTecnicaRequest dto) {
+        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
 
         Carro carro = carroRepository.findById(dto.carroId())
-                .orElseThrow(() -> new NotFoundException("Carro não encontrado com id: " + dto.carroId()));
+                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
 
         especificacao.setCarro(carro);
         especificacao.setTitulo(dto.titulo());
         especificacao.setValor(dto.valor());
 
-        especificacao = especificacaoTecnicaRepository.save(especificacao);
-
-        return toResponseDTO(especificacao);
+        return toResponse(especificacaoRepository.save(especificacao));
     }
 
+    public DataEspecificacaoTecnicaResponse findById(Long id) {
+        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
 
-    public DataEspecificacaoTecnicaResponse buscarPorId(Long id) {
-        EspecificacaoTecnica especificacao = especificacaoTecnicaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com id: " + id));
-
-        return toResponseDTO(especificacao);
+        return toResponse(especificacao);
     }
 
-    public void deletar(Long id){
-        EspecificacaoTecnica especificacao=especificacaoTecnicaRepository.findById(id).orElseThrow(() -> new NotFoundException("Especificação não encontrada com id: " + id));
-
-    especificacaoTecnicaRepository.delete(especificacao);
+    @Transactional
+    public void delete(Long id) {
+        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
+        especificacaoRepository.delete(especificacao);
     }
 
-
-
-    private DataEspecificacaoTecnicaResponse toResponseDTO(EspecificacaoTecnica especificacao) {
+    private DataEspecificacaoTecnicaResponse toResponse(EspecificacaoTecnica especificacao) {
         Carro carro = especificacao.getCarro();
         return new DataEspecificacaoTecnicaResponse(
                 especificacao.getTitulo(),
