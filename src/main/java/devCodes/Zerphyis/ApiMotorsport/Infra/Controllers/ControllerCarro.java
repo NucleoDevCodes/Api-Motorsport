@@ -1,7 +1,7 @@
 package devCodes.Zerphyis.ApiMotorsport.Infra.Controllers;
 
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroRequest;
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataCarroResponse;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroRequest;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroResponse;
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceCarro;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
