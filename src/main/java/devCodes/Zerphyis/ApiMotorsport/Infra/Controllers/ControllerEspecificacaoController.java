@@ -5,6 +5,7 @@ import devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao.DataEsp
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceEspecificacaoTecnica;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,30 +14,27 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ControllerEspecificacaoController {
 
+
     private final ServiceEspecificacaoTecnica service;
 
     @PostMapping
-    public ResponseEntity<DataEspecificacaoTecnicaResponse> criar(@Valid @RequestBody DataEspecificacaoTecnicaRequest dto) {
-        return ResponseEntity.ok(service.criar(dto));
-
+    public ResponseEntity<DataEspecificacaoTecnicaResponse> create(@Valid @RequestBody DataEspecificacaoTecnicaRequest dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataEspecificacaoTecnicaResponse> atualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody DataEspecificacaoTecnicaRequest dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+    public ResponseEntity<DataEspecificacaoTecnicaResponse> update(@PathVariable Long id, @Valid @RequestBody DataEspecificacaoTecnicaRequest dto) {
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataEspecificacaoTecnicaResponse> buscarId(@PathVariable Long id){
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public ResponseEntity<DataEspecificacaoTecnicaResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        service.deletar(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }
