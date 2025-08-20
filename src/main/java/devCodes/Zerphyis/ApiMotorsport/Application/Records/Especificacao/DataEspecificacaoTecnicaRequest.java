@@ -1,4 +1,4 @@
-package devCodes.Zerphyis.ApiMotorsport.Application.Records;
+package devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
