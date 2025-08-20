@@ -15,22 +15,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServiceCarro {
 
-    private final  CarroRepository repository;
+    private final CarroRepository repository;
 
     @Transactional
-    public DataCarroResponse save(DataCarroRequest dto){
-        Carro carro= new Carro();
+    public DataCarroResponse create(DataCarroRequest dto){
+        Carro carro = new Carro();
         carro.setNome(dto.nome());
         carro.setModelo(dto.modelo());
         carro.setDescricao(dto.descricao());
         carro.setPreco(dto.preco());
         carro.setImagemUrl(dto.imagemUrl());
         carro.setOrdem(dto.ordem());
-        return  toResponse(repository.save(carro));
+        return toResponse(repository.save(carro));
     }
 
     @Transactional
-    public DataCarroResponse update(Long id , DataCarroRequest dto){
+    public DataCarroResponse update(Long id, DataCarroRequest dto){
         Carro carro = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + id));
         carro.setNome(dto.nome());
@@ -43,26 +43,22 @@ public class ServiceCarro {
     }
 
     public List<DataCarroResponse> findAll(){
-        return repository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return repository.findAll().stream().map(this::toResponse).toList();
     }
 
-    public DataCarroResponse findByid(Long id){
-        Carro carro = repository.findById(id).orElseThrow(() -> new NotFoundException("Carro não encontrado com o id"));
+    public DataCarroResponse findById(Long id){
+        Carro carro = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + id));
         return toResponse(carro);
     }
 
     @Transactional
     public void delete(Long id){
-        if (!repository.existsById(id)) {
+        if(!repository.existsById(id)) {
             throw new NotFoundException("Carro não encontrado com ID " + id);
         }
         repository.deleteById(id);
     }
-
-
 
     private DataCarroResponse toResponse(Carro carro){
         return new DataCarroResponse(
