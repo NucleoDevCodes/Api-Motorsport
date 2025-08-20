@@ -1,9 +1,8 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataConteudoRequest;
-import devCodes.Zerphyis.ApiMotorsport.Application.Records.DataConteudoResponse;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Conteudo.DataConteudoRequest;
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Conteudo.DataConteudoResponse;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
-import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.ResourceNotFoundException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Conteudo.Conteudo;
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.ConteudoRepository;
 import lombok.RequiredArgsConstructor;
