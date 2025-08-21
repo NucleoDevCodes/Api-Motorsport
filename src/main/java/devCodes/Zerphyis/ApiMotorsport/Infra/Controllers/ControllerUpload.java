@@ -1,7 +1,9 @@
 package devCodes.Zerphyis.ApiMotorsport.Infra.Controllers;
 
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload;
+import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +18,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ControllerUpload {
 
-        private final ServiceUpload uploadService;
+    private final ServiceUpload service;
 
-        @PostMapping
-        public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
-            String url = uploadService.uploadFile(file);
-            return ResponseEntity.ok(Map.of("url", url));
-        }
+    @PostMapping
+    public ResponseEntity<Upload> uploadFile(@RequestParam("file") MultipartFile file) {
+        Upload upload = service.saveFile(file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(upload);
+    }
 }

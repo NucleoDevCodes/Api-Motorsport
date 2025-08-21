@@ -51,9 +51,10 @@ public class ServiceConteudo {
 
     private DataConteudoResponse toResponse(Conteudo conteudo) {
         return new DataConteudoResponse(
-                conteudo.getConteudo(),
                 conteudo.getTitulo(),
+                conteudo.getConteudo(),
                 conteudo.getImagemUrl()
         );
     }
-}
+    }
+

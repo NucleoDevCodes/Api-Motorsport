@@ -3,7 +3,11 @@ package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
+import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
+import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.UploadRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,10 +17,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceUpload {
     private static final String UPLOAD_DIR = "uploads/";
+    private final UploadRepository repository;
 
-    public String uploadFile(MultipartFile file) {
+    @Transactional
+    public Upload saveFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new BadRequestException("Arquivo vazio");
         }
@@ -41,6 +48,12 @@ public class ServiceUpload {
             throw new FileUploadException("Erro ao salvar arquivo.");
         }
 
-        return "/uploads/" + fileName;
+        Upload upload = new Upload();
+        upload.setNomeArquivo(fileName);
+        upload.setUrl("/uploads/" + fileName);
+        upload.setConteudo(file.getContentType());
+        upload.setTamanho(file.getSize());
+
+        return repository.save(upload);
     }
 }
