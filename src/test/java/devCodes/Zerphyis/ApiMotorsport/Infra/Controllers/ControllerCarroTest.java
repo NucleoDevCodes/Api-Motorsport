@@ -75,4 +75,25 @@ class ControllerCarroTest {
         assertThrows(EntityNotFoundException.class, () -> controller.findById(99L));
         verify(service, times(1)).findById(99L);
     }
+    @Test
+    void createHappy() {
+        when(service.create(request)).thenReturn(response);
+
+        ResponseEntity<DataCarroResponse> result = controller.create(request);
+
+        assertEquals(201, result.getStatusCodeValue());
+        assertEquals(response, result.getBody());
+        verify(service, times(1)).create(request);
+    }
+
+    @Test
+    void createSad() {
+        when(service.create(request)).thenThrow(new RuntimeException("Erro ao salvar carro"));
+
+        assertThrows(RuntimeException.class, () -> controller.create(request));
+        verify(service, times(1)).create(request);
+    }
+
+
 }
+
