@@ -66,4 +66,18 @@ class ControllerConteudoTest {
         assertThrows(NotFoundException.class,() -> controller.create(request));
         verify(service,times(1)).create(request);
     }
+
+    @Test
+    void update() {
+        when(service.update(1L,request)).thenReturn(response);
+        ResponseEntity<DataConteudoResponse> result= controller.update(1L,request);
+        assertEquals(response,result.getBody());
+    }
+
+    @Test
+    void updateSad() {
+        when(service.update(99L,request)).thenThrow(new EntityNotFoundException("Conteúdo não encontrado"));
+        assertThrows(EntityNotFoundException.class, () -> controller.update(99L,request));
+        verify(service, times(1)).update(99L,request);
+    }
 }
