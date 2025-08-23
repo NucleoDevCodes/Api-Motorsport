@@ -4,6 +4,7 @@ import devCodes.Zerphyis.ApiMotorsport.Application.Records.Conteudo.DataConteudo
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Conteudo.DataConteudoResponse;
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceConteudo;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.EntityNotFoundException;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -49,4 +50,20 @@ class ControllerConteudoTest {
         assertThrows(EntityNotFoundException.class, () -> controller.findById(99L));
     }
 
+    @Test
+    void create() {
+        when(service.create(request)).thenReturn(response);
+        ResponseEntity<DataConteudoResponse> result = controller.create(request);
+
+        assertEquals(201, result.getStatusCodeValue());
+        assertEquals(response, result.getBody());
+    }
+
+
+    @Test
+    void createSad(){
+        when(service.create(request)).thenThrow(new NotFoundException("Erro ao criar Conteúdo"));
+        assertThrows(NotFoundException.class,() -> controller.create(request));
+        verify(service,times(1)).create(request);
+    }
 }
