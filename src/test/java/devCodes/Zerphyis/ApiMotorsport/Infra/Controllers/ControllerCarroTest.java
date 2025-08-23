@@ -4,6 +4,7 @@ import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroReques
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroResponse;
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceCarro;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.EntityNotFoundException;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -88,9 +89,9 @@ class ControllerCarroTest {
 
     @Test
     void createSad() {
-        when(service.create(request)).thenThrow(new RuntimeException("Erro ao salvar carro"));
+        when(service.create(request)).thenThrow(new NotFoundException("Erro ao salvar carro"));
 
-        assertThrows(RuntimeException.class, () -> controller.create(request));
+        assertThrows(NotFoundException.class, () -> controller.create(request));
         verify(service, times(1)).create(request);
     }
 
@@ -110,6 +111,25 @@ class ControllerCarroTest {
 
         assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
         verify(service, times(1)).update(99L, request);
+    }
+
+
+    @Test
+    void deleteHappy() {
+        doNothing().when(service).delete(1L);
+
+        ResponseEntity<Void> result = controller.delete(1L);
+
+        assertEquals(204, result.getStatusCodeValue());
+        verify(service).delete(1L);
+    }
+
+    @Test
+    void deleteSad() {
+        doThrow(new NotFoundException("Carro não encontrado")).when(service).delete(99L);
+
+        assertThrows(NotFoundException.class, () -> controller.delete(99L));
+        verify(service, times(1)).delete(99L);
     }
 }
 
