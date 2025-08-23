@@ -80,4 +80,19 @@ class ControllerConteudoTest {
         assertThrows(EntityNotFoundException.class, () -> controller.update(99L,request));
         verify(service, times(1)).update(99L,request);
     }
+
+    @Test
+    void delete() {
+       doNothing().when(service).delete(1L);
+       ResponseEntity<Void> result=controller.delete(1L);
+       assertEquals(204,result.getStatusCodeValue());
+    }
+
+    @Test
+    void deleteSad() {
+        doThrow(new EntityNotFoundException("Conteúdo não encontrado")).when(service).delete(99L);
+
+        assertThrows(EntityNotFoundException.class, () -> controller.delete(99L));
+        verify(service, times(1)).delete(99L);
+    }
 }
