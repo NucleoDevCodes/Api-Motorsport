@@ -94,6 +94,22 @@ class ControllerCarroTest {
         verify(service, times(1)).create(request);
     }
 
+    @Test
+    void updateHappy() {
+        when(service.update(1L, request)).thenReturn(response);
 
+        ResponseEntity<DataCarroResponse> result = controller.update(1L, request);
+
+        assertEquals(response, result.getBody());
+        verify(service, times(1)).update(1L, request);
+    }
+
+    @Test
+    void updateSad() {
+        when(service.update(99L, request)).thenThrow(new EntityNotFoundException("Carro não encontrado"));
+
+        assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
+        verify(service, times(1)).update(99L, request);
+    }
 }
 
