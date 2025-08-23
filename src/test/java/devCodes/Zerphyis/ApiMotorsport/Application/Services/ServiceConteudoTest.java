@@ -92,4 +92,34 @@ class ServiceConteudoTest {
         verify(conteudoRepository, times(1)).existsById(1L);
         verify(conteudoRepository, times(1)).deleteById(1L);
     }
+
+    @Test
+    void testFindById_NotFound() {
+        when(conteudoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> serviceConteudo.findById(1L));
+        verify(conteudoRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testUpdate_NotFound() {
+        when(conteudoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        DataConteudoRequest request = new DataConteudoRequest(
+                "titulo teste", "conteudo Teste", "url_teste"
+        );
+
+        assertThrows(NotFoundException.class, () -> serviceConteudo.update(1L, request));
+        verify(conteudoRepository, times(1)).findById(1L);
+        verify(conteudoRepository, never()).save(any());
+    }
+
+    @Test
+    void testDelete_NotFound() {
+        when(conteudoRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> serviceConteudo.delete(1L));
+        verify(conteudoRepository, times(1)).existsById(1L);
+        verify(conteudoRepository, never()).deleteById(anyLong());
+    }
 }
