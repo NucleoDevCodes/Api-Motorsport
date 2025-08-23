@@ -3,6 +3,7 @@ package devCodes.Zerphyis.ApiMotorsport.Infra.Controllers;
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao.DataEspecificacaoTecnicaRequest;
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Especificacao.DataEspecificacaoTecnicaResponse;
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceEspecificacaoTecnica;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.EntityNotFoundException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,5 +52,20 @@ class ControllerEspecificacaoControllerTest {
     void createSad(){
         when(service.create(request)).thenThrow(new NotFoundException("Erro ao criar especificação"));
         assertThrows(NotFoundException.class, () -> controller.create(request));
+    }
+
+    @Test
+    void update(){
+        when(service.update(1L,request)).thenReturn(response);
+        ResponseEntity<DataEspecificacaoTecnicaResponse> result=controller.update(1L,request);
+        assertEquals(200,result.getStatusCodeValue());
+        assertEquals(response,result.getBody());
+    }
+
+    @Test
+    void update_NotFound() {
+        when(service.update(99L,request)).thenThrow(new EntityNotFoundException("Não encontrada especificação"));
+
+        assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
     }
 }
