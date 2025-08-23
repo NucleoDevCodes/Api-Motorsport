@@ -82,4 +82,21 @@ class ControllerEspecificacaoControllerTest {
 
         assertThrows(EntityNotFoundException.class, () -> controller.delete(99L));
     }
+
+    @Test
+    void findById() {
+        when(service.findById(1L)).thenReturn(response);
+
+        ResponseEntity<DataEspecificacaoTecnicaResponse> result = controller.findById(1L);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(response, result.getBody());
+    }
+
+    @Test
+    void findByIdSad() {
+        when(service.findById(99L)).thenThrow(new EntityNotFoundException("Especificação não encontrada"));
+
+        assertThrows(EntityNotFoundException.class, () -> controller.findById(99L));
+    }
 }
