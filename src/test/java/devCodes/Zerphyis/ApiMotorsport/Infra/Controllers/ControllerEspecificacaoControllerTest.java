@@ -54,6 +54,7 @@ class ControllerEspecificacaoControllerTest {
         assertThrows(NotFoundException.class, () -> controller.create(request));
     }
 
+
     @Test
     void update(){
         when(service.update(1L,request)).thenReturn(response);
@@ -63,9 +64,22 @@ class ControllerEspecificacaoControllerTest {
     }
 
     @Test
-    void update_NotFound() {
+    void updateSad() {
         when(service.update(99L,request)).thenThrow(new EntityNotFoundException("Não encontrada especificação"));
 
         assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
+    }
+
+    @Test
+    void delete(){
+        doNothing().when(service).delete(1L);
+        ResponseEntity<Void> result= controller.delete(1L);
+        assertEquals(204,result.getStatusCodeValue());
+    }
+    @Test
+    void deleteSad(){
+        doThrow(new EntityNotFoundException("Não encontrada")).when(service).delete(99L);
+
+        assertThrows(EntityNotFoundException.class, () -> controller.delete(99L));
     }
 }
