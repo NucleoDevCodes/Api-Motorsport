@@ -179,4 +179,20 @@ class ServiceUploadTest {
         assertThrows(FileUploadException.class, () -> service.updateFile(1L, file));
         verify(repository, never()).save(any());
     }
+
+    @Test
+    void testDelete() throws IOException {
+        Upload existing = new Upload(1L, "file.png", "/uploads/file.png", "image/png", 100L);
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        doNothing().when(repository).delete(existing);
+
+        assertDoesNotThrow(() -> service.delete(1L));
+        verify(repository, times(1)).delete(existing);
+    }
+
+    @Test
+    void testDeleteSad() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(BadRequestException.class, () -> service.delete(1L));
+    }
 }
