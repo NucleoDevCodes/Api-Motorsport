@@ -1,6 +1,8 @@
 package devCodes.Zerphyis.ApiMotorsport.Infra.Controllers;
 
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Upload.ResponseUpload;
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload;
+import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +13,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ControllerUploadTest {
     @Mock
@@ -24,35 +29,98 @@ class ControllerUploadTest {
     @InjectMocks
     private ControllerUpload controller;
 
-    private Upload upload;
+    private ResponseUpload responseUpload;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        upload = new Upload();
-        upload.setId(1L);
-        upload.setNomeArquivo("file.png");
-        upload.setUrl("uploads/file.png");
-        upload.setConteudo("conteudo do arquivo");
-        upload.setTamanho(123L);
+        responseUpload = new ResponseUpload(
+                1L,
+                "file.png",
+                "/uploads/file.png",
+                "image/png",
+                123L
+        );
     }
 
-    @Test
-    void updateFile() {
-        when(service.saveFile(file)).thenReturn(upload);
 
-        ResponseEntity<Upload> result = controller.uploadFile(file);
+    @Test
+    void uploadFile() {
+        when(service.saveFile(file)).thenReturn(responseUpload);
+
+        ResponseEntity<ResponseUpload> result = controller.uploadFile(file);
 
         assertEquals(201, result.getStatusCodeValue());
-        assertEquals(upload.getNomeArquivo(), result.getBody().getNomeArquivo());
-        assertEquals(upload.getUrl(), result.getBody().getUrl());
-        assertEquals(upload.getConteudo(), result.getBody().getConteudo());
-        assertEquals(upload.getTamanho(), result.getBody().getTamanho());
+        assertEquals(responseUpload, result.getBody());
+        verify(service, times(1)).saveFile(file);
     }
 
     @Test
-    void updateFileSad() {
+    void uploadFileFailure() {
         when(service.saveFile(file)).thenThrow(new FileUploadException("Falha no upload"));
 
         assertThrows(FileUploadException.class, () -> controller.uploadFile(file));
+    }
+
+
+    @Test
+    void getUpload() {
+        when(service.findById(1L)).thenReturn(responseUpload);
+
+        ResponseEntity<ResponseUpload> result = controller.getUpload(1L);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(responseUpload, result.getBody());
+    }
+
+    @Test
+    void getUploadSad() {
+        when(service.findById(1L)).thenThrow(new BadRequestException("Arquivo não encontrado"));
+
+        assertThrows(BadRequestException.class, () -> controller.getUpload(1L));
+    }
+
+
+    @Test
+    void getAllUploads() {
+        ResponseUpload response2 = new ResponseUpload(2L, "file2.jpg", "/uploads/file2.jpg", "image/jpeg", 200L);
+        when(service.findAll()).thenReturn(List.of(responseUpload, response2));
+
+        ResponseEntity<List<ResponseUpload>> result = controller.getAllUploads();
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(2, result.getBody().size());
+    }
+    @Test
+    void updateUpload() {
+        when(service.updateFile(1L, file)).thenReturn(responseUpload);
+
+        ResponseEntity<ResponseUpload> result = controller.updateUpload(1L, file);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(responseUpload, result.getBody());
+    }
+
+    @Test
+    void updateUploadSad() {
+        when(service.updateFile(1L, file)).thenThrow(new BadRequestException("Arquivo não encontrado"));
+
+        assertThrows(BadRequestException.class, () -> controller.updateUpload(1L, file));
+    }
+    @Test
+    void deleteUpload() {
+        doNothing().when(service).delete(1L);
+
+        ResponseEntity<Void> result = controller.deleteUpload(1L);
+
+        assertEquals(204, result.getStatusCodeValue());
+        verify(service, times(1)).delete(1L);
+    }
+
+    @Test
+    void deleteUploadSad() {
+        doThrow(new BadRequestException("Arquivo não encontrado")).when(service).delete(1L);
+
+        assertThrows(BadRequestException.class, () -> controller.deleteUpload(1L));
     }
 }

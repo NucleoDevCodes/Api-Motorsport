@@ -1,6 +1,7 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
 
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Upload.ResponseUpload;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class ServiceUpload {
     private final UploadRepository repository;
 
     @Transactional
-    public Upload saveFile(MultipartFile file) {
+    public ResponseUpload saveFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new BadRequestException("Arquivo vazio");
         }
@@ -54,6 +56,72 @@ public class ServiceUpload {
         upload.setConteudo(file.getContentType());
         upload.setTamanho(file.getSize());
 
-        return repository.save(upload);
+        return toResponse(repository.save(upload));
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseUpload findById(Long id) {
+        Upload upload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+        return toResponse(upload);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResponseUpload> findAll() {
+        return repository.findAll().stream().map(this::toResponse).toList();
+    }
+
+    @Transactional
+    public ResponseUpload updateFile(Long id, MultipartFile file) {
+        Upload existingUpload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+
+        if (file.isEmpty()) {
+            throw new BadRequestException("Arquivo vazio");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.matches(".*\\.(png|jpg|jpeg)$")) {
+            throw new BadRequestException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + originalFilename;
+        Path filePath = Paths.get(UPLOAD_DIR + fileName);
+
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new FileUploadException("Erro ao atualizar arquivo.");
+        }
+
+        existingUpload.setNomeArquivo(fileName);
+        existingUpload.setUrl("/uploads/" + fileName);
+        existingUpload.setConteudo(file.getContentType());
+        existingUpload.setTamanho(file.getSize());
+
+        return toResponse(repository.save(existingUpload));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Upload upload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+
+        repository.delete(upload);
+        try {
+            Files.deleteIfExists(Paths.get(UPLOAD_DIR + upload.getNomeArquivo()));
+        } catch (IOException e) {
+            throw new FileUploadException("Erro ao remover arquivo físico.");
+        }
+    }
+
+    private ResponseUpload toResponse(Upload upload) {
+        return new ResponseUpload(
+                upload.getId(),
+                upload.getNomeArquivo(),
+                upload.getUrl(),
+                upload.getConteudo(),
+                upload.getTamanho()
+        );
     }
 }
