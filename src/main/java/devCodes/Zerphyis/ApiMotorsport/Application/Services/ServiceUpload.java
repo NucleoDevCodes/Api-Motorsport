@@ -71,6 +71,50 @@ public class ServiceUpload {
         return repository.findAll().stream().map(this::toResponse).toList();
     }
 
+    @Transactional
+    public ResponseUpload updateFile(Long id, MultipartFile file) {
+        Upload existingUpload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+
+        if (file.isEmpty()) {
+            throw new BadRequestException("Arquivo vazio");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.matches(".*\\.(png|jpg|jpeg)$")) {
+            throw new BadRequestException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + originalFilename;
+        Path filePath = Paths.get(UPLOAD_DIR + fileName);
+
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new FileUploadException("Erro ao atualizar arquivo.");
+        }
+
+        existingUpload.setNomeArquivo(fileName);
+        existingUpload.setUrl("/uploads/" + fileName);
+        existingUpload.setConteudo(file.getContentType());
+        existingUpload.setTamanho(file.getSize());
+
+        return toResponse(repository.save(existingUpload));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Upload upload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+
+        repository.delete(upload);
+        try {
+            Files.deleteIfExists(Paths.get(UPLOAD_DIR + upload.getNomeArquivo()));
+        } catch (IOException e) {
+            throw new FileUploadException("Erro ao remover arquivo físico.");
+        }
+    }
+
     private ResponseUpload toResponse(Upload upload) {
         return new ResponseUpload(
                 upload.getId(),
