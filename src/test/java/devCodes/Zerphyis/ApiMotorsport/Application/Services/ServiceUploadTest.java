@@ -126,4 +126,57 @@ class ServiceUploadTest {
         assertNotNull(uploads);
         assertTrue(uploads.isEmpty());
     }
+
+    @Test
+    void testUpdateFile() throws IOException {
+        MultipartFile file = new MockMultipartFile(
+                "file", "new.png", "image/png", "dummy".getBytes()
+        );
+        Upload existing = new Upload(1L, "old.png", "/uploads/old.png", "image/png", 50L);
+        Upload updated = new Upload(1L, "123_new.png", "/uploads/123_new.png", "image/png", file.getSize());
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.save(any(Upload.class))).thenReturn(updated);
+
+        ResponseUpload response = service.updateFile(1L, file);
+
+        assertNotNull(response);
+        assertEquals("123_new.png", response.nomeArquivo());
+    }
+
+    @Test
+    void testUpdateFileSad() {
+        MultipartFile file = new MockMultipartFile(
+                "file", "new.png", "image/png", "dummy".getBytes()
+        );
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file));
+    }
+
+    @Test
+    void testUpdateFileEmptyFile() {
+        MultipartFile file = new MockMultipartFile("file", new byte[0]);
+        Upload existing = new Upload(1L, "old.png", "/uploads/old.png", "image/png", 50L);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+
+        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file));
+    }
+
+    @Test
+    void testUpdateFileFailToSaveFile() throws IOException {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("new.png");
+        when(file.getContentType()).thenReturn("image/png");
+        when(file.getSize()).thenReturn(200L);
+        when(file.getInputStream()).thenThrow(new IOException("Erro de I/O"));
+
+        Upload existing = new Upload(1L, "old.png", "/uploads/old.png", "image/png", 50L);
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+
+        assertThrows(FileUploadException.class, () -> service.updateFile(1L, file));
+        verify(repository, never()).save(any());
+    }
 }
