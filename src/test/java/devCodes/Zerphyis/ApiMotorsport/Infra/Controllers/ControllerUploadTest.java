@@ -91,5 +91,20 @@ class ControllerUploadTest {
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(2, result.getBody().size());
     }
+    @Test
+    void updateUpload() {
+        when(service.updateFile(1L, file)).thenReturn(responseUpload);
 
+        ResponseEntity<ResponseUpload> result = controller.updateUpload(1L, file);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(responseUpload, result.getBody());
+    }
+
+    @Test
+    void updateUploadSad() {
+        when(service.updateFile(1L, file)).thenThrow(new BadRequestException("Arquivo não encontrado"));
+
+        assertThrows(BadRequestException.class, () -> controller.updateUpload(1L, file));
+    }
 }
