@@ -37,4 +37,16 @@ public class ControllerUpload {
         return ResponseEntity.ok(uploads);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseUpload> updateUpload(@PathVariable Long id,
+                                                       @RequestParam("file") MultipartFile file) {
+        ResponseUpload updated = service.updateFile(id, file);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUpload(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
