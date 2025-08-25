@@ -1,6 +1,7 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
 
+import devCodes.Zerphyis.ApiMotorsport.Application.Records.Upload.ResponseUpload;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
 import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class ServiceUpload {
     private final UploadRepository repository;
 
     @Transactional
-    public Upload saveFile(MultipartFile file) {
+    public ResponseUpload saveFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new BadRequestException("Arquivo vazio");
         }
@@ -54,6 +56,28 @@ public class ServiceUpload {
         upload.setConteudo(file.getContentType());
         upload.setTamanho(file.getSize());
 
-        return repository.save(upload);
+        return toResponse(repository.save(upload));
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseUpload findById(Long id) {
+        Upload upload = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
+        return toResponse(upload);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResponseUpload> findAll() {
+        return repository.findAll().stream().map(this::toResponse).toList();
+    }
+
+    private ResponseUpload toResponse(Upload upload) {
+        return new ResponseUpload(
+                upload.getId(),
+                upload.getNomeArquivo(),
+                upload.getUrl(),
+                upload.getConteudo(),
+                upload.getTamanho()
+        );
     }
 }
