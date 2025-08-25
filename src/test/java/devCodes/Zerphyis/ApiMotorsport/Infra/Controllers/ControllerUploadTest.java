@@ -107,4 +107,20 @@ class ControllerUploadTest {
 
         assertThrows(BadRequestException.class, () -> controller.updateUpload(1L, file));
     }
+    @Test
+    void deleteUpload() {
+        doNothing().when(service).delete(1L);
+
+        ResponseEntity<Void> result = controller.deleteUpload(1L);
+
+        assertEquals(204, result.getStatusCodeValue());
+        verify(service, times(1)).delete(1L);
+    }
+
+    @Test
+    void deleteUploadSad() {
+        doThrow(new BadRequestException("Arquivo não encontrado")).when(service).delete(1L);
+
+        assertThrows(BadRequestException.class, () -> controller.deleteUpload(1L));
+    }
 }
