@@ -10,13 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 class ServiceConteudoTest {
+
     @InjectMocks
     private ServiceConteudo serviceConteudo;
 
@@ -44,7 +46,7 @@ class ServiceConteudoTest {
 
         when(conteudoRepository.save(any(Conteudo.class))).thenReturn(conteudo);
 
-        DataConteudoResponse response = serviceConteudo.create(request);
+        DataConteudoResponse response = serviceConteudo.create(request).join();
 
         assertEquals("titulo teste", response.titulo());
         assertEquals("conteudo Teste", response.conteudo());
@@ -56,7 +58,7 @@ class ServiceConteudoTest {
     void testFindById_Success() {
         when(conteudoRepository.findById(1L)).thenReturn(Optional.of(conteudo));
 
-        DataConteudoResponse response = serviceConteudo.findById(1L);
+        DataConteudoResponse response = serviceConteudo.findById(1L).join();
 
         assertEquals("titulo teste", response.titulo());
         assertEquals("conteudo Teste", response.conteudo());
@@ -73,7 +75,7 @@ class ServiceConteudoTest {
         when(conteudoRepository.findById(1L)).thenReturn(Optional.of(conteudo));
         when(conteudoRepository.save(any(Conteudo.class))).thenReturn(conteudo);
 
-        DataConteudoResponse response = serviceConteudo.update(1L, request);
+        DataConteudoResponse response = serviceConteudo.update(1L, request).join();
 
         assertEquals("titulo teste", response.titulo());
         assertEquals("conteudo Teste", response.conteudo());
@@ -87,7 +89,7 @@ class ServiceConteudoTest {
         when(conteudoRepository.existsById(1L)).thenReturn(true);
         doNothing().when(conteudoRepository).deleteById(1L);
 
-        serviceConteudo.delete(1L);
+        serviceConteudo.delete(1L).join();
 
         verify(conteudoRepository, times(1)).existsById(1L);
         verify(conteudoRepository, times(1)).deleteById(1L);
@@ -97,7 +99,7 @@ class ServiceConteudoTest {
     void testFindById_NotFound() {
         when(conteudoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.findById(1L));
+        assertThrows(NotFoundException.class, () -> serviceConteudo.findById(1L).join());
         verify(conteudoRepository, times(1)).findById(1L);
     }
 
@@ -109,7 +111,7 @@ class ServiceConteudoTest {
                 "titulo teste", "conteudo Teste", "url_teste"
         );
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.update(1L, request));
+        assertThrows(NotFoundException.class, () -> serviceConteudo.update(1L, request).join());
         verify(conteudoRepository, times(1)).findById(1L);
         verify(conteudoRepository, never()).save(any());
     }
@@ -118,7 +120,7 @@ class ServiceConteudoTest {
     void testDelete_NotFound() {
         when(conteudoRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.delete(1L));
+        assertThrows(NotFoundException.class, () -> serviceConteudo.delete(1L).join());
         verify(conteudoRepository, times(1)).existsById(1L);
         verify(conteudoRepository, never()).deleteById(anyLong());
     }

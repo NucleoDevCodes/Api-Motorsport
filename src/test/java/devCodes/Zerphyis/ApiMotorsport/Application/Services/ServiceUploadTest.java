@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +35,6 @@ class ServiceUploadTest {
         MockitoAnnotations.openMocks(this);
     }
 
-
     @Test
     void testSaveFile() throws IOException {
         MultipartFile file = new MockMultipartFile(
@@ -50,7 +50,7 @@ class ServiceUploadTest {
 
         when(repository.save(any(Upload.class))).thenReturn(upload);
 
-        ResponseUpload saved = service.saveFile(file);
+        ResponseUpload saved = service.saveFile(file).join();
 
         assertNotNull(saved);
         assertEquals("123_image.png", saved.nomeArquivo());
@@ -61,7 +61,7 @@ class ServiceUploadTest {
     @Test
     void testSaveFileEmptyFile() {
         MultipartFile file = new MockMultipartFile("file", new byte[0]);
-        assertThrows(BadRequestException.class, () -> service.saveFile(file));
+        assertThrows(BadRequestException.class, () -> service.saveFile(file).join());
         verify(repository, never()).save(any());
     }
 
@@ -70,7 +70,7 @@ class ServiceUploadTest {
         MultipartFile file = new MockMultipartFile(
                 "file", "document.pdf", "application/pdf", "dummy".getBytes()
         );
-        assertThrows(BadRequestException.class, () -> service.saveFile(file));
+        assertThrows(BadRequestException.class, () -> service.saveFile(file).join());
         verify(repository, never()).save(any());
     }
 
@@ -83,17 +83,16 @@ class ServiceUploadTest {
         when(file.getContentType()).thenReturn("image/png");
         when(file.getSize()).thenReturn(100L);
 
-        assertThrows(FileUploadException.class, () -> service.saveFile(file));
+        assertThrows(FileUploadException.class, () -> service.saveFile(file).join());
         verify(repository, never()).save(any());
     }
-
 
     @Test
     void testFindById() {
         Upload upload = new Upload(1L, "file.png", "/uploads/file.png", "image/png", 100L);
         when(repository.findById(1L)).thenReturn(Optional.of(upload));
 
-        ResponseUpload response = service.findById(1L);
+        ResponseUpload response = service.findById(1L).join();
 
         assertNotNull(response);
         assertEquals(1L, response.id());
@@ -102,7 +101,7 @@ class ServiceUploadTest {
     @Test
     void testFindByIdSad() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> service.findById(1L));
+        assertThrows(BadRequestException.class, () -> service.findById(1L).join());
     }
 
     @Test
@@ -112,7 +111,7 @@ class ServiceUploadTest {
 
         when(repository.findAll()).thenReturn(List.of(upload1, upload2));
 
-        List<ResponseUpload> uploads = service.findAll();
+        List<ResponseUpload> uploads = service.findAll().join();
 
         assertEquals(2, uploads.size());
     }
@@ -121,7 +120,7 @@ class ServiceUploadTest {
     void testFindAllSad() {
         when(repository.findAll()).thenReturn(List.of());
 
-        List<ResponseUpload> uploads = service.findAll();
+        List<ResponseUpload> uploads = service.findAll().join();
 
         assertNotNull(uploads);
         assertTrue(uploads.isEmpty());
@@ -138,7 +137,7 @@ class ServiceUploadTest {
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         when(repository.save(any(Upload.class))).thenReturn(updated);
 
-        ResponseUpload response = service.updateFile(1L, file);
+        ResponseUpload response = service.updateFile(1L, file).join();
 
         assertNotNull(response);
         assertEquals("123_new.png", response.nomeArquivo());
@@ -151,7 +150,7 @@ class ServiceUploadTest {
         );
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file));
+        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file).join());
     }
 
     @Test
@@ -161,7 +160,7 @@ class ServiceUploadTest {
 
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
 
-        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file));
+        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file).join());
     }
 
     @Test
@@ -176,23 +175,23 @@ class ServiceUploadTest {
         Upload existing = new Upload(1L, "old.png", "/uploads/old.png", "image/png", 50L);
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
 
-        assertThrows(FileUploadException.class, () -> service.updateFile(1L, file));
+        assertThrows(FileUploadException.class, () -> service.updateFile(1L, file).join());
         verify(repository, never()).save(any());
     }
 
     @Test
-    void testDelete() throws IOException {
+    void testDelete() {
         Upload existing = new Upload(1L, "file.png", "/uploads/file.png", "image/png", 100L);
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         doNothing().when(repository).delete(existing);
 
-        assertDoesNotThrow(() -> service.delete(1L));
+        assertDoesNotThrow(() -> service.delete(1L).join());
         verify(repository, times(1)).delete(existing);
     }
 
     @Test
     void testDeleteSad() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> service.delete(1L));
+        assertThrows(BadRequestException.class, () -> service.delete(1L).join());
     }
 }

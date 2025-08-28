@@ -4,7 +4,6 @@ import devCodes.Zerphyis.ApiMotorsport.Application.Records.Upload.ResponseUpload
 import devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
-import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Upload.Upload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,12 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ControllerUploadTest {
+
     @Mock
     private ServiceUpload service;
 
@@ -43,12 +43,11 @@ class ControllerUploadTest {
         );
     }
 
-
     @Test
-    void uploadFile() {
-        when(service.saveFile(file)).thenReturn(responseUpload);
+    void uploadFileHappy() {
+        when(service.saveFile(file)).thenReturn(CompletableFuture.completedFuture(responseUpload));
 
-        ResponseEntity<ResponseUpload> result = controller.uploadFile(file);
+        ResponseEntity<ResponseUpload> result = controller.uploadFile(file).join();
 
         assertEquals(201, result.getStatusCodeValue());
         assertEquals(responseUpload, result.getBody());
@@ -56,18 +55,21 @@ class ControllerUploadTest {
     }
 
     @Test
-    void uploadFileFailure() {
-        when(service.saveFile(file)).thenThrow(new FileUploadException("Falha no upload"));
+    void uploadFileSad() {
+        when(service.saveFile(file)).thenReturn(
+                CompletableFuture.failedFuture(new FileUploadException("Falha no upload"))
+        );
 
-        assertThrows(FileUploadException.class, () -> controller.uploadFile(file));
+        CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.uploadFile(file);
+
+        assertThrows(FileUploadException.class, future::join);
     }
 
-
     @Test
-    void getUpload() {
-        when(service.findById(1L)).thenReturn(responseUpload);
+    void getUploadHappy() {
+        when(service.findById(1L)).thenReturn(CompletableFuture.completedFuture(responseUpload));
 
-        ResponseEntity<ResponseUpload> result = controller.getUpload(1L);
+        ResponseEntity<ResponseUpload> result = controller.getUpload(1L).join();
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(responseUpload, result.getBody());
@@ -75,27 +77,31 @@ class ControllerUploadTest {
 
     @Test
     void getUploadSad() {
-        when(service.findById(1L)).thenThrow(new BadRequestException("Arquivo não encontrado"));
+        when(service.findById(1L)).thenReturn(
+                CompletableFuture.failedFuture(new BadRequestException("Arquivo não encontrado"))
+        );
 
-        assertThrows(BadRequestException.class, () -> controller.getUpload(1L));
+        CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.getUpload(1L);
+
+        assertThrows(BadRequestException.class, future::join);
     }
 
-
     @Test
-    void getAllUploads() {
+    void getAllUploadsHappy() {
         ResponseUpload response2 = new ResponseUpload(2L, "file2.jpg", "/uploads/file2.jpg", "image/jpeg", 200L);
-        when(service.findAll()).thenReturn(List.of(responseUpload, response2));
+        when(service.findAll()).thenReturn(CompletableFuture.completedFuture(List.of(responseUpload, response2)));
 
-        ResponseEntity<List<ResponseUpload>> result = controller.getAllUploads();
+        ResponseEntity<List<ResponseUpload>> result = controller.getAllUploads().join();
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(2, result.getBody().size());
     }
-    @Test
-    void updateUpload() {
-        when(service.updateFile(1L, file)).thenReturn(responseUpload);
 
-        ResponseEntity<ResponseUpload> result = controller.updateUpload(1L, file);
+    @Test
+    void updateUploadHappy() {
+        when(service.updateFile(1L, file)).thenReturn(CompletableFuture.completedFuture(responseUpload));
+
+        ResponseEntity<ResponseUpload> result = controller.updateUpload(1L, file).join();
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(responseUpload, result.getBody());
@@ -103,15 +109,20 @@ class ControllerUploadTest {
 
     @Test
     void updateUploadSad() {
-        when(service.updateFile(1L, file)).thenThrow(new BadRequestException("Arquivo não encontrado"));
+        when(service.updateFile(1L, file)).thenReturn(
+                CompletableFuture.failedFuture(new BadRequestException("Arquivo não encontrado"))
+        );
 
-        assertThrows(BadRequestException.class, () -> controller.updateUpload(1L, file));
+        CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.updateUpload(1L, file);
+
+        assertThrows(BadRequestException.class, future::join);
     }
-    @Test
-    void deleteUpload() {
-        doNothing().when(service).delete(1L);
 
-        ResponseEntity<Void> result = controller.deleteUpload(1L);
+    @Test
+    void deleteUploadHappy() {
+        when(service.delete(1L)).thenReturn(CompletableFuture.completedFuture(null));
+
+        ResponseEntity<Void> result = controller.deleteUpload(1L).join();
 
         assertEquals(204, result.getStatusCodeValue());
         verify(service, times(1)).delete(1L);
@@ -119,8 +130,12 @@ class ControllerUploadTest {
 
     @Test
     void deleteUploadSad() {
-        doThrow(new BadRequestException("Arquivo não encontrado")).when(service).delete(1L);
+        when(service.delete(1L)).thenReturn(
+                CompletableFuture.failedFuture(new BadRequestException("Arquivo não encontrado"))
+        );
 
-        assertThrows(BadRequestException.class, () -> controller.deleteUpload(1L));
+        CompletableFuture<ResponseEntity<Void>> future = controller.deleteUpload(1L);
+
+        assertThrows(BadRequestException.class, future::join);
     }
 }

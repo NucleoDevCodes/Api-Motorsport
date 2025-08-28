@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,7 +29,6 @@ class ControllerCarroTest {
 
     private DataCarroRequest request;
     private DataCarroResponse response;
-
 
     @BeforeEach
     void setup() {
@@ -53,17 +53,18 @@ class ControllerCarroTest {
 
     @Test
     void findAllHappy() {
-        when(service.findAll()).thenReturn(List.of(response));
+        when(service.findAll()).thenReturn(CompletableFuture.completedFuture(List.of(response)));
 
-        ResponseEntity<List<DataCarroResponse>> resultado = controller.findAll();
+        ResponseEntity<List<DataCarroResponse>> resultado = controller.findAll().join();
         assertEquals(1, resultado.getBody().size());
         verify(service, times(1)).findAll();
     }
 
     @Test
     void findByIdHappy() {
-        when(service.findById(1l)).thenReturn(response);
-        ResponseEntity<DataCarroResponse> result = controller.findById(1L);
+        when(service.findById(1L)).thenReturn(CompletableFuture.completedFuture(response));
+
+        ResponseEntity<DataCarroResponse> result = controller.findById(1L).join();
 
         assertEquals(response, result.getBody());
         verify(service, times(1)).findById(1L);
@@ -71,16 +72,21 @@ class ControllerCarroTest {
 
     @Test
     void findByIdNotFound() {
-        when(service.findById(99L)).thenThrow(new EntityNotFoundException("Carro não encontrado"));
+        when(service.findById(99L)).thenReturn(
+                CompletableFuture.failedFuture(new EntityNotFoundException("Carro não encontrado"))
+        );
 
-        assertThrows(EntityNotFoundException.class, () -> controller.findById(99L));
+        CompletableFuture<ResponseEntity<DataCarroResponse>> future = controller.findById(99L);
+
+        assertThrows(EntityNotFoundException.class, future::join);
         verify(service, times(1)).findById(99L);
     }
+
     @Test
     void createHappy() {
-        when(service.create(request)).thenReturn(response);
+        when(service.create(request)).thenReturn(CompletableFuture.completedFuture(response));
 
-        ResponseEntity<DataCarroResponse> result = controller.create(request);
+        ResponseEntity<DataCarroResponse> result = controller.create(request).join();
 
         assertEquals(201, result.getStatusCodeValue());
         assertEquals(response, result.getBody());
@@ -89,17 +95,21 @@ class ControllerCarroTest {
 
     @Test
     void createSad() {
-        when(service.create(request)).thenThrow(new NotFoundException("Erro ao salvar carro"));
+        when(service.create(request)).thenReturn(
+                CompletableFuture.failedFuture(new NotFoundException("Erro ao salvar carro"))
+        );
 
-        assertThrows(NotFoundException.class, () -> controller.create(request));
+        CompletableFuture<ResponseEntity<DataCarroResponse>> future = controller.create(request);
+
+        assertThrows(NotFoundException.class, future::join);
         verify(service, times(1)).create(request);
     }
 
     @Test
     void updateHappy() {
-        when(service.update(1L, request)).thenReturn(response);
+        when(service.update(1L, request)).thenReturn(CompletableFuture.completedFuture(response));
 
-        ResponseEntity<DataCarroResponse> result = controller.update(1L, request);
+        ResponseEntity<DataCarroResponse> result = controller.update(1L, request).join();
 
         assertEquals(response, result.getBody());
         verify(service, times(1)).update(1L, request);
@@ -107,18 +117,21 @@ class ControllerCarroTest {
 
     @Test
     void updateSad() {
-        when(service.update(99L, request)).thenThrow(new EntityNotFoundException("Carro não encontrado"));
+        when(service.update(99L, request)).thenReturn(
+                CompletableFuture.failedFuture(new EntityNotFoundException("Carro não encontrado"))
+        );
 
-        assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
+        CompletableFuture<ResponseEntity<DataCarroResponse>> future = controller.update(99L, request);
+
+        assertThrows(EntityNotFoundException.class, future::join);
         verify(service, times(1)).update(99L, request);
     }
 
-
     @Test
     void deleteHappy() {
-        doNothing().when(service).delete(1L);
+        when(service.delete(1L)).thenReturn(CompletableFuture.completedFuture(null));
 
-        ResponseEntity<Void> result = controller.delete(1L);
+        ResponseEntity<Void> result = controller.delete(1L).join();
 
         assertEquals(204, result.getStatusCodeValue());
         verify(service).delete(1L);
@@ -126,10 +139,13 @@ class ControllerCarroTest {
 
     @Test
     void deleteSad() {
-        doThrow(new NotFoundException("Carro não encontrado")).when(service).delete(99L);
+        when(service.delete(99L)).thenReturn(
+                CompletableFuture.failedFuture(new NotFoundException("Carro não encontrado"))
+        );
 
-        assertThrows(NotFoundException.class, () -> controller.delete(99L));
+        CompletableFuture<ResponseEntity<Void>> future = controller.delete(99L);
+
+        assertThrows(NotFoundException.class, future::join);
         verify(service, times(1)).delete(99L);
     }
 }
-
