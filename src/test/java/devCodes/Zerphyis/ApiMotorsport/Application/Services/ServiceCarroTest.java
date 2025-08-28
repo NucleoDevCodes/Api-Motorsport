@@ -1,6 +1,5 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
-
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroRequest;
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Carro.DataCarroResponse;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.NotFoundException;
@@ -54,7 +53,7 @@ class ServiceCarroTest {
     void testCreate_Success() {
         when(repository.save(any(Carro.class))).thenReturn(carro);
 
-        DataCarroResponse response = service.create(request);
+        DataCarroResponse response = service.create(request).join();
 
         assertNotNull(response);
         assertEquals("Carro Teste", response.nome());
@@ -66,7 +65,7 @@ class ServiceCarroTest {
         when(repository.findById(1L)).thenReturn(Optional.of(carro));
         when(repository.save(any(Carro.class))).thenReturn(carro);
 
-        DataCarroResponse response = service.update(1L, request);
+        DataCarroResponse response = service.update(1L, request).join();
 
         assertEquals("Modelo X", response.modelo());
         verify(repository, times(1)).findById(1L);
@@ -77,7 +76,7 @@ class ServiceCarroTest {
     void testUpdate_NotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request));
+        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
         verify(repository, times(1)).findById(1L);
         verify(repository, never()).save(any());
     }
@@ -86,7 +85,7 @@ class ServiceCarroTest {
     void testFindAll_Success() {
         when(repository.findAll()).thenReturn(List.of(carro));
 
-        List<DataCarroResponse> result = service.findAll();
+        List<DataCarroResponse> result = service.findAll().join();
 
         assertEquals(1, result.size());
         assertEquals("Carro Teste", result.get(0).nome());
@@ -97,7 +96,7 @@ class ServiceCarroTest {
     void testFindById_Success() {
         when(repository.findById(1L)).thenReturn(Optional.of(carro));
 
-        DataCarroResponse response = service.findById(1L);
+        DataCarroResponse response = service.findById(1L).join();
 
         assertEquals("Carro Teste", response.nome());
         verify(repository, times(1)).findById(1L);
@@ -107,7 +106,7 @@ class ServiceCarroTest {
     void testFindById_NotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.findById(1L));
+        assertThrows(NotFoundException.class, () -> service.findById(1L).join());
         verify(repository, times(1)).findById(1L);
     }
 
@@ -115,7 +114,7 @@ class ServiceCarroTest {
     void testDelete_Success() {
         when(repository.existsById(1L)).thenReturn(true);
 
-        service.delete(1L);
+        service.delete(1L).join();
 
         verify(repository, times(1)).existsById(1L);
         verify(repository, times(1)).deleteById(1L);
@@ -125,9 +124,8 @@ class ServiceCarroTest {
     void testDelete_NotFound() {
         when(repository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> service.delete(1L));
+        assertThrows(NotFoundException.class, () -> service.delete(1L).join());
         verify(repository, times(1)).existsById(1L);
         verify(repository, never()).deleteById(anyLong());
     }
-
 }
