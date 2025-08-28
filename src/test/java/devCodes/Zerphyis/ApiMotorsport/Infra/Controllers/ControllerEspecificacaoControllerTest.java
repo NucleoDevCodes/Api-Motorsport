@@ -12,18 +12,21 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ControllerEspecificacaoControllerTest {
+
     @Mock
     private ServiceEspecificacaoTecnica service;
+
     @InjectMocks
     private ControllerEspecificacaoController controller;
 
     private DataEspecificacaoTecnicaRequest request;
     private DataEspecificacaoTecnicaResponse response;
-
 
     @BeforeEach
     void setUp() {
@@ -41,53 +44,72 @@ class ControllerEspecificacaoControllerTest {
     }
 
     @Test
-    void create(){
-        when(service.create(request)).thenReturn(response);
-        ResponseEntity<DataEspecificacaoTecnicaResponse> result= controller.create(request);
-        assertEquals(201,result.getStatusCodeValue());
-        assertEquals(response,result.getBody());
+    void createHappy() {
+        when(service.create(request)).thenReturn(CompletableFuture.completedFuture(response));
+
+        ResponseEntity<DataEspecificacaoTecnicaResponse> result = controller.create(request).join();
+
+        assertEquals(201, result.getStatusCodeValue());
+        assertEquals(response, result.getBody());
     }
 
     @Test
-    void createSad(){
-        when(service.create(request)).thenThrow(new NotFoundException("Erro ao criar especificação"));
-        assertThrows(NotFoundException.class, () -> controller.create(request));
+    void createSad() {
+        when(service.create(request)).thenReturn(
+                CompletableFuture.failedFuture(new NotFoundException("Erro ao criar especificação"))
+        );
+
+        CompletableFuture<ResponseEntity<DataEspecificacaoTecnicaResponse>> future = controller.create(request);
+
+        assertThrows(NotFoundException.class, future::join);
     }
 
-
     @Test
-    void update(){
-        when(service.update(1L,request)).thenReturn(response);
-        ResponseEntity<DataEspecificacaoTecnicaResponse> result=controller.update(1L,request);
-        assertEquals(200,result.getStatusCodeValue());
-        assertEquals(response,result.getBody());
+    void updateHappy() {
+        when(service.update(1L, request)).thenReturn(CompletableFuture.completedFuture(response));
+
+        ResponseEntity<DataEspecificacaoTecnicaResponse> result = controller.update(1L, request).join();
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(response, result.getBody());
     }
 
     @Test
     void updateSad() {
-        when(service.update(99L,request)).thenThrow(new EntityNotFoundException("Não encontrada especificação"));
+        when(service.update(99L, request)).thenReturn(
+                CompletableFuture.failedFuture(new EntityNotFoundException("Não encontrada especificação"))
+        );
 
-        assertThrows(EntityNotFoundException.class, () -> controller.update(99L, request));
+        CompletableFuture<ResponseEntity<DataEspecificacaoTecnicaResponse>> future = controller.update(99L, request);
+
+        assertThrows(EntityNotFoundException.class, future::join);
     }
 
     @Test
-    void delete(){
-        doNothing().when(service).delete(1L);
-        ResponseEntity<Void> result= controller.delete(1L);
-        assertEquals(204,result.getStatusCodeValue());
-    }
-    @Test
-    void deleteSad(){
-        doThrow(new EntityNotFoundException("Não encontrada")).when(service).delete(99L);
+    void deleteHappy() {
+        when(service.delete(1L)).thenReturn(CompletableFuture.completedFuture(null));
 
-        assertThrows(EntityNotFoundException.class, () -> controller.delete(99L));
+        ResponseEntity<Void> result = controller.delete(1L).join();
+
+        assertEquals(204, result.getStatusCodeValue());
     }
 
     @Test
-    void findById() {
-        when(service.findById(1L)).thenReturn(response);
+    void deleteSad() {
+        when(service.delete(99L)).thenReturn(
+                CompletableFuture.failedFuture(new EntityNotFoundException("Não encontrada"))
+        );
 
-        ResponseEntity<DataEspecificacaoTecnicaResponse> result = controller.findById(1L);
+        CompletableFuture<ResponseEntity<Void>> future = controller.delete(99L);
+
+        assertThrows(EntityNotFoundException.class, future::join);
+    }
+
+    @Test
+    void findByIdHappy() {
+        when(service.findById(1L)).thenReturn(CompletableFuture.completedFuture(response));
+
+        ResponseEntity<DataEspecificacaoTecnicaResponse> result = controller.findById(1L).join();
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(response, result.getBody());
@@ -95,8 +117,12 @@ class ControllerEspecificacaoControllerTest {
 
     @Test
     void findByIdSad() {
-        when(service.findById(99L)).thenThrow(new EntityNotFoundException("Especificação não encontrada"));
+        when(service.findById(99L)).thenReturn(
+                CompletableFuture.failedFuture(new EntityNotFoundException("Especificação não encontrada"))
+        );
 
-        assertThrows(EntityNotFoundException.class, () -> controller.findById(99L));
+        CompletableFuture<ResponseEntity<DataEspecificacaoTecnicaResponse>> future = controller.findById(99L);
+
+        assertThrows(EntityNotFoundException.class, future::join);
     }
 }
