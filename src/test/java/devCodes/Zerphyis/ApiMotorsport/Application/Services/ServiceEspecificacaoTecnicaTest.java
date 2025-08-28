@@ -58,7 +58,7 @@ class ServiceEspecificacaoTecnicaTest {
         when(carroRepository.findById(1L)).thenReturn(Optional.of(carro));
         when(especificacaoRepository.save(any(EspecificacaoTecnica.class))).thenReturn(especificacao);
 
-        DataEspecificacaoTecnicaResponse response = service.create(request);
+        DataEspecificacaoTecnicaResponse response = service.create(request).join();
 
         assertNotNull(response);
         assertEquals("Potência", response.titulo());
@@ -72,7 +72,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testCreate_CarroNotFound() {
         when(carroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.create(request));
+        assertThrows(NotFoundException.class, () -> service.create(request).join());
         verify(especificacaoRepository, never()).save(any());
     }
 
@@ -82,7 +82,7 @@ class ServiceEspecificacaoTecnicaTest {
         when(carroRepository.findById(1L)).thenReturn(Optional.of(carro));
         when(especificacaoRepository.save(any(EspecificacaoTecnica.class))).thenReturn(especificacao);
 
-        DataEspecificacaoTecnicaResponse response = service.update(1L, request);
+        DataEspecificacaoTecnicaResponse response = service.update(1L, request).join();
 
         assertEquals("Potência", response.titulo());
         assertEquals("300cv", response.valor());
@@ -95,7 +95,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testUpdate_EspecificacaoNotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request));
+        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
         verify(carroRepository, never()).findById(anyLong());
         verify(especificacaoRepository, never()).save(any());
     }
@@ -105,7 +105,7 @@ class ServiceEspecificacaoTecnicaTest {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.of(especificacao));
         when(carroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request));
+        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
         verify(especificacaoRepository, never()).save(any());
     }
 
@@ -113,7 +113,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testFindById_Success() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.of(especificacao));
 
-        DataEspecificacaoTecnicaResponse response = service.findById(1L);
+        DataEspecificacaoTecnicaResponse response = service.findById(1L).join();
 
         assertEquals("Potência", response.titulo());
         assertEquals("Modelo X", response.modelo());
@@ -124,7 +124,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testFindById_NotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.findById(1L));
+        assertThrows(NotFoundException.class, () -> service.findById(1L).join());
         verify(especificacaoRepository, times(1)).findById(1L);
     }
 
@@ -132,7 +132,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testDelete_Success() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.of(especificacao));
 
-        service.delete(1L);
+        service.delete(1L).join();
 
         verify(especificacaoRepository, times(1)).findById(1L);
         verify(especificacaoRepository, times(1)).delete(especificacao);
@@ -142,7 +142,7 @@ class ServiceEspecificacaoTecnicaTest {
     void testDelete_NotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.delete(1L));
+        assertThrows(NotFoundException.class, () -> service.delete(1L).join());
         verify(especificacaoRepository, never()).delete(any());
     }
 }
