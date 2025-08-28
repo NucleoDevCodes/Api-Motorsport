@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/carros")
@@ -18,28 +19,33 @@ public class ControllerCarro {
     private final ServiceCarro service;
 
     @GetMapping
-    public ResponseEntity<List<DataCarroResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    public CompletableFuture<ResponseEntity<List<DataCarroResponse>>> findAll() {
+        return service.findAll()
+                .thenApply(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataCarroResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    public CompletableFuture<ResponseEntity<DataCarroResponse>> findById(@PathVariable Long id) {
+        return service.findById(id)
+                .thenApply(ResponseEntity::ok);
     }
 
     @PostMapping
-    public ResponseEntity<DataCarroResponse> create(@Valid @RequestBody DataCarroRequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
+    public CompletableFuture<ResponseEntity<DataCarroResponse>> create(@Valid @RequestBody DataCarroRequest dto) {
+        return service.create(dto)
+                .thenApply(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataCarroResponse> update(@PathVariable Long id, @Valid @RequestBody DataCarroRequest dto) {
-        return ResponseEntity.ok(service.update(id, dto));
+    public CompletableFuture<ResponseEntity<DataCarroResponse>> update(@PathVariable Long id,
+                                                                       @Valid @RequestBody DataCarroRequest dto) {
+        return service.update(id, dto)
+                .thenApply(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public CompletableFuture<ResponseEntity<Void>> delete(@PathVariable Long id) {
+        return service.delete(id)
+                .thenApply(v -> ResponseEntity.noContent().build());
     }
 }

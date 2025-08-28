@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/sobre")
 @RequiredArgsConstructor
@@ -17,24 +19,28 @@ public class ControllerConteudo {
     private final ServiceConteudo service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataConteudoResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    public CompletableFuture<ResponseEntity<DataConteudoResponse>> findById(@PathVariable Long id) {
+        return service.findById(id)
+                .thenApply(ResponseEntity::ok);
     }
 
     @PostMapping
-    public ResponseEntity<DataConteudoResponse> create(@Valid @RequestBody DataConteudoRequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
+    public CompletableFuture<ResponseEntity<DataConteudoResponse>> create(@Valid @RequestBody DataConteudoRequest dto) {
+        return service.create(dto)
+                .thenApply(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataConteudoResponse> update(@PathVariable Long id, @Valid @RequestBody DataConteudoRequest dto) {
-        return ResponseEntity.ok(service.update(id, dto));
+    public CompletableFuture<ResponseEntity<DataConteudoResponse>> update(@PathVariable Long id,
+                                                                          @Valid @RequestBody DataConteudoRequest dto) {
+        return service.update(id, dto)
+                .thenApply(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public CompletableFuture<ResponseEntity<Void>> delete(@PathVariable Long id) {
+        return service.delete(id)
+                .thenApply(v -> ResponseEntity.noContent().build());
     }
 
 }

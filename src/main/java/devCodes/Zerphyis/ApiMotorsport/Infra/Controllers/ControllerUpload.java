@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -20,33 +21,33 @@ public class ControllerUpload {
     private final ServiceUpload service;
 
     @PostMapping
-    public ResponseEntity<ResponseUpload> uploadFile(@RequestParam("file") MultipartFile file) {
-        ResponseUpload upload = service.saveFile(file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(upload);
+    public CompletableFuture<ResponseEntity<ResponseUpload>> uploadFile(@RequestParam("file") MultipartFile file) {
+        return service.saveFile(file)
+                .thenApply(upload -> ResponseEntity.status(HttpStatus.CREATED).body(upload));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseUpload> getUpload(@PathVariable Long id) {
-        ResponseUpload upload = service.findById(id);
-        return ResponseEntity.ok(upload);
+    public CompletableFuture<ResponseEntity<ResponseUpload>> getUpload(@PathVariable Long id) {
+        return service.findById(id)
+                .thenApply(ResponseEntity::ok);
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseUpload>> getAllUploads() {
-        List<ResponseUpload> uploads = service.findAll();
-        return ResponseEntity.ok(uploads);
+    public CompletableFuture<ResponseEntity<List<ResponseUpload>>> getAllUploads() {
+        return service.findAll()
+                .thenApply(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseUpload> updateUpload(@PathVariable Long id,
-                                                       @RequestParam("file") MultipartFile file) {
-        ResponseUpload updated = service.updateFile(id, file);
-        return ResponseEntity.ok(updated);
+    public CompletableFuture<ResponseEntity<ResponseUpload>> updateUpload(@PathVariable Long id,
+                                                                          @RequestParam("file") MultipartFile file) {
+        return service.updateFile(id, file)
+                .thenApply(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUpload(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public CompletableFuture<ResponseEntity<Void>> deleteUpload(@PathVariable Long id) {
+        return service.delete(id)
+                .thenApply(v -> ResponseEntity.noContent().build());
     }
 }

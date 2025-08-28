@@ -8,8 +8,11 @@ import devCodes.Zerphyis.ApiMotorsport.Model.Entity.Especificao.EspecificacaoTec
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.CarroRepository;
 import devCodes.Zerphyis.ApiMotorsport.Model.Repositorys.EspecificacaoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -21,45 +24,57 @@ public class ServiceEspecificacaoTecnica {
     private final CarroRepository carroRepository;
 
     @Transactional
-    public DataEspecificacaoTecnicaResponse create(DataEspecificacaoTecnicaRequest dto) {
-        Carro carro = carroRepository.findById(dto.carroId())
-                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
+    @Async
+    public CompletableFuture<DataEspecificacaoTecnicaResponse> create(DataEspecificacaoTecnicaRequest dto) {
+        return CompletableFuture.supplyAsync(() -> {
+            Carro carro = carroRepository.findById(dto.carroId())
+                    .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
 
-        EspecificacaoTecnica especificacao = new EspecificacaoTecnica();
-        especificacao.setCarro(carro);
-        especificacao.setTitulo(dto.titulo());
-        especificacao.setValor(dto.valor());
+            EspecificacaoTecnica especificacao = new EspecificacaoTecnica();
+            especificacao.setCarro(carro);
+            especificacao.setTitulo(dto.titulo());
+            especificacao.setValor(dto.valor());
 
-        return toResponse(especificacaoRepository.save(especificacao));
+            return toResponse(especificacaoRepository.save(especificacao));
+        });
     }
 
     @Transactional
-    public DataEspecificacaoTecnicaResponse update(Long id, DataEspecificacaoTecnicaRequest dto) {
-        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
+    @Async
+    public CompletableFuture<DataEspecificacaoTecnicaResponse> update(Long id, DataEspecificacaoTecnicaRequest dto) {
+        return CompletableFuture.supplyAsync(() -> {
+            EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
 
-        Carro carro = carroRepository.findById(dto.carroId())
-                .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
+            Carro carro = carroRepository.findById(dto.carroId())
+                    .orElseThrow(() -> new NotFoundException("Carro não encontrado com ID " + dto.carroId()));
 
-        especificacao.setCarro(carro);
-        especificacao.setTitulo(dto.titulo());
-        especificacao.setValor(dto.valor());
+            especificacao.setCarro(carro);
+            especificacao.setTitulo(dto.titulo());
+            especificacao.setValor(dto.valor());
 
-        return toResponse(especificacaoRepository.save(especificacao));
+            return toResponse(especificacaoRepository.save(especificacao));
+        });
     }
 
-    public DataEspecificacaoTecnicaResponse findById(Long id) {
-        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
+    @Async
+    public CompletableFuture<DataEspecificacaoTecnicaResponse> findById(Long id) {
+        return CompletableFuture.supplyAsync(() -> {
+            EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
 
-        return toResponse(especificacao);
+            return toResponse(especificacao);
+        });
     }
 
     @Transactional
-    public void delete(Long id) {
-        EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
-        especificacaoRepository.delete(especificacao);
+    @Async
+    public CompletableFuture<Void> delete(Long id) {
+        return CompletableFuture.runAsync(() -> {
+            EspecificacaoTecnica especificacao = especificacaoRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Especificação não encontrada com ID " + id));
+            especificacaoRepository.delete(especificacao);
+        });
     }
 
     private DataEspecificacaoTecnicaResponse toResponse(EspecificacaoTecnica especificacao) {
