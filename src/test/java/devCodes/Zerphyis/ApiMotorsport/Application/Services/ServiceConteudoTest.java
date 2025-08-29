@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,7 +100,12 @@ class ServiceConteudoTest {
     void testFindById_NotFound() {
         when(conteudoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.findById(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> serviceConteudo.findById(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(conteudoRepository, times(1)).findById(1L);
     }
 
@@ -111,7 +117,12 @@ class ServiceConteudoTest {
                 "titulo teste", "conteudo Teste", "url_teste"
         );
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.update(1L, request).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> serviceConteudo.update(1L, request).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(conteudoRepository, times(1)).findById(1L);
         verify(conteudoRepository, never()).save(any());
     }
@@ -120,7 +131,12 @@ class ServiceConteudoTest {
     void testDelete_NotFound() {
         when(conteudoRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> serviceConteudo.delete(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> serviceConteudo.delete(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(conteudoRepository, times(1)).existsById(1L);
         verify(conteudoRepository, never()).deleteById(anyLong());
     }
