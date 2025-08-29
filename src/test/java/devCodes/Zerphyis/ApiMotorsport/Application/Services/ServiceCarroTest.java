@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +77,12 @@ class ServiceCarroTest {
     void testUpdate_NotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.update(1L, request).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(repository, times(1)).findById(1L);
         verify(repository, never()).save(any());
     }
@@ -106,7 +112,12 @@ class ServiceCarroTest {
     void testFindById_NotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.findById(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.findById(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(repository, times(1)).findById(1L);
     }
 
@@ -124,7 +135,12 @@ class ServiceCarroTest {
     void testDelete_NotFound() {
         when(repository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> service.delete(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.delete(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(repository, times(1)).existsById(1L);
         verify(repository, never()).deleteById(anyLong());
     }
