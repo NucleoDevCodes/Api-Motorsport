@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +61,9 @@ class ServiceUploadTest {
     @Test
     void testSaveFileEmptyFile() {
         MultipartFile file = new MockMultipartFile("file", new byte[0]);
-        assertThrows(BadRequestException.class, () -> service.saveFile(file).join());
+
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.saveFile(file).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
         verify(repository, never()).save(any());
     }
 
@@ -70,7 +72,9 @@ class ServiceUploadTest {
         MultipartFile file = new MockMultipartFile(
                 "file", "document.pdf", "application/pdf", "dummy".getBytes()
         );
-        assertThrows(BadRequestException.class, () -> service.saveFile(file).join());
+
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.saveFile(file).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
         verify(repository, never()).save(any());
     }
 
@@ -83,7 +87,8 @@ class ServiceUploadTest {
         when(file.getContentType()).thenReturn("image/png");
         when(file.getSize()).thenReturn(100L);
 
-        assertThrows(FileUploadException.class, () -> service.saveFile(file).join());
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.saveFile(file).join());
+        assertTrue(ex.getCause() instanceof FileUploadException);
         verify(repository, never()).save(any());
     }
 
@@ -101,7 +106,9 @@ class ServiceUploadTest {
     @Test
     void testFindByIdSad() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> service.findById(1L).join());
+
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.findById(1L).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
     }
 
     @Test
@@ -150,7 +157,8 @@ class ServiceUploadTest {
         );
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file).join());
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.updateFile(1L, file).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
     }
 
     @Test
@@ -160,7 +168,8 @@ class ServiceUploadTest {
 
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
 
-        assertThrows(BadRequestException.class, () -> service.updateFile(1L, file).join());
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.updateFile(1L, file).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
     }
 
     @Test
@@ -175,7 +184,8 @@ class ServiceUploadTest {
         Upload existing = new Upload(1L, "old.png", "/uploads/old.png", "image/png", 50L);
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
 
-        assertThrows(FileUploadException.class, () -> service.updateFile(1L, file).join());
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.updateFile(1L, file).join());
+        assertTrue(ex.getCause() instanceof FileUploadException);
         verify(repository, never()).save(any());
     }
 
@@ -192,6 +202,8 @@ class ServiceUploadTest {
     @Test
     void testDeleteSad() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> service.delete(1L).join());
+
+        CompletionException ex = assertThrows(CompletionException.class, () -> service.delete(1L).join());
+        assertTrue(ex.getCause() instanceof BadRequestException);
     }
 }

@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +73,12 @@ class ServiceEspecificacaoTecnicaTest {
     void testCreate_CarroNotFound() {
         when(carroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.create(request).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.create(request).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(especificacaoRepository, never()).save(any());
     }
 
@@ -95,7 +101,12 @@ class ServiceEspecificacaoTecnicaTest {
     void testUpdate_EspecificacaoNotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.update(1L, request).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(carroRepository, never()).findById(anyLong());
         verify(especificacaoRepository, never()).save(any());
     }
@@ -105,7 +116,12 @@ class ServiceEspecificacaoTecnicaTest {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.of(especificacao));
         when(carroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.update(1L, request).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.update(1L, request).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(especificacaoRepository, never()).save(any());
     }
 
@@ -124,7 +140,12 @@ class ServiceEspecificacaoTecnicaTest {
     void testFindById_NotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.findById(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.findById(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(especificacaoRepository, times(1)).findById(1L);
     }
 
@@ -142,7 +163,12 @@ class ServiceEspecificacaoTecnicaTest {
     void testDelete_NotFound() {
         when(especificacaoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.delete(1L).join());
+        CompletionException exception = assertThrows(
+                CompletionException.class,
+                () -> service.delete(1L).join()
+        );
+
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(especificacaoRepository, never()).delete(any());
     }
 }

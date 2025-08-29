@@ -1,0 +1,210 @@
+-------------------------------------------------------------------------------
+Test set: devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 8, Errors: 0, Skipped: 0, Time elapsed: 0.398 s <<< FAILURE! -- in devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileFailToSaveFile -- Time elapsed: 0.283 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileFailToSaveFile(ServiceUploadTest.java:178)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException: Erro ao atualizar arquivo.
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException: Erro ao atualizar arquivo.
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$updateFile$5(ServiceUpload.java:108)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileSad -- Time elapsed: 0.006 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileSad(ServiceUploadTest.java:86)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException: Erro ao salvar arquivo.
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException: Erro ao salvar arquivo.
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$saveFile$0(ServiceUpload.java:55)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileSad -- Time elapsed: 0.004 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileSad(ServiceUploadTest.java:153)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$updateFile$4(ServiceUpload.java:91)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$updateFile$5(ServiceUpload.java:91)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testDeleteSad -- Time elapsed: 0.004 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testDeleteSad(ServiceUploadTest.java:195)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1807)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$delete$6(ServiceUpload.java:125)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$delete$7(ServiceUpload.java:125)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileEmptyFile -- Time elapsed: 0.004 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testUpdateFileEmptyFile(ServiceUploadTest.java:163)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo vazio
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo vazio
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$updateFile$5(ServiceUpload.java:94)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testFindByIdSad -- Time elapsed: 0.005 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testFindByIdSad(ServiceUploadTest.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo não encontrado com ID: 1
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$findById$1(ServiceUpload.java:73)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$findById$2(ServiceUpload.java:73)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileInvalidFormat -- Time elapsed: 0.004 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileInvalidFormat(ServiceUploadTest.java:73)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Formato inválido. Apenas PNG, JPG e JPEG são permitidos.
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Formato inválido. Apenas PNG, JPG e JPEG são permitidos.
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$saveFile$0(ServiceUpload.java:40)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
+devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileEmptyFile -- Time elapsed: 0.003 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException> but was: <java.util.concurrent.CompletionException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUploadTest.testSaveFileEmptyFile(ServiceUploadTest.java:64)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.CompletionException: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo vazio
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+Caused by: devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException: Arquivo vazio
+	at devCodes.Zerphyis.ApiMotorsport.Application.Services.ServiceUpload.lambda$saveFile$0(ServiceUpload.java:35)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)
+	... 6 more
+
