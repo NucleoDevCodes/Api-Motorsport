@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -62,7 +63,9 @@ class ControllerUploadTest {
 
         CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.uploadFile(file);
 
-        assertThrows(FileUploadException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof FileUploadException);
+        verify(service, times(1)).saveFile(file);
     }
 
     @Test
@@ -73,6 +76,7 @@ class ControllerUploadTest {
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(responseUpload, result.getBody());
+        verify(service, times(1)).findById(1L);
     }
 
     @Test
@@ -83,7 +87,9 @@ class ControllerUploadTest {
 
         CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.getUpload(1L);
 
-        assertThrows(BadRequestException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof BadRequestException);
+        verify(service, times(1)).findById(1L);
     }
 
     @Test
@@ -95,6 +101,7 @@ class ControllerUploadTest {
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(2, result.getBody().size());
+        verify(service, times(1)).findAll();
     }
 
     @Test
@@ -105,6 +112,7 @@ class ControllerUploadTest {
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(responseUpload, result.getBody());
+        verify(service, times(1)).updateFile(1L, file);
     }
 
     @Test
@@ -115,7 +123,9 @@ class ControllerUploadTest {
 
         CompletableFuture<ResponseEntity<ResponseUpload>> future = controller.updateUpload(1L, file);
 
-        assertThrows(BadRequestException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof BadRequestException);
+        verify(service, times(1)).updateFile(1L, file);
     }
 
     @Test
@@ -125,6 +135,7 @@ class ControllerUploadTest {
         ResponseEntity<Void> result = controller.deleteUpload(1L).join();
 
         assertEquals(204, result.getStatusCodeValue());
+        assertNull(result.getBody());
         verify(service, times(1)).delete(1L);
     }
 
@@ -136,6 +147,8 @@ class ControllerUploadTest {
 
         CompletableFuture<ResponseEntity<Void>> future = controller.deleteUpload(1L);
 
-        assertThrows(BadRequestException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof BadRequestException);
+        verify(service, times(1)).delete(1L);
     }
 }
