@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,6 +42,7 @@ class ControllerConteudoTest {
 
         ResponseEntity<DataConteudoResponse> result = controller.findById(1L).join();
 
+        assertEquals(200, result.getStatusCodeValue());
         assertEquals(response, result.getBody());
         verify(service, times(1)).findById(1L);
     }
@@ -53,7 +55,8 @@ class ControllerConteudoTest {
 
         CompletableFuture<ResponseEntity<DataConteudoResponse>> future = controller.findById(99L);
 
-        assertThrows(EntityNotFoundException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof EntityNotFoundException);
         verify(service, times(1)).findById(99L);
     }
 
@@ -76,7 +79,8 @@ class ControllerConteudoTest {
 
         CompletableFuture<ResponseEntity<DataConteudoResponse>> future = controller.create(request);
 
-        assertThrows(NotFoundException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof NotFoundException);
         verify(service, times(1)).create(request);
     }
 
@@ -86,6 +90,7 @@ class ControllerConteudoTest {
 
         ResponseEntity<DataConteudoResponse> result = controller.update(1L, request).join();
 
+        assertEquals(200, result.getStatusCodeValue());
         assertEquals(response, result.getBody());
         verify(service, times(1)).update(1L, request);
     }
@@ -98,7 +103,8 @@ class ControllerConteudoTest {
 
         CompletableFuture<ResponseEntity<DataConteudoResponse>> future = controller.update(99L, request);
 
-        assertThrows(EntityNotFoundException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof EntityNotFoundException);
         verify(service, times(1)).update(99L, request);
     }
 
@@ -109,6 +115,7 @@ class ControllerConteudoTest {
         ResponseEntity<Void> result = controller.delete(1L).join();
 
         assertEquals(204, result.getStatusCodeValue());
+        assertNull(result.getBody());
         verify(service).delete(1L);
     }
 
@@ -120,7 +127,8 @@ class ControllerConteudoTest {
 
         CompletableFuture<ResponseEntity<Void>> future = controller.delete(99L);
 
-        assertThrows(EntityNotFoundException.class, future::join);
+        CompletionException exception = assertThrows(CompletionException.class, future::join);
+        assertTrue(exception.getCause() instanceof EntityNotFoundException);
         verify(service, times(1)).delete(99L);
     }
 }
