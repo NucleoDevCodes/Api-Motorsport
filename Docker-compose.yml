@@ -1,0 +1,79 @@
+services:
+  motorsport-api-v1:
+    container_name: motorsport-api-v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: env/app.env
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - motor-net
+
+  motorsport-api-v2:
+    container_name: motorsport-api-v2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: env/app2.env
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - motor-net
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: motorsport_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - motor-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-umotorsport_user", "-pmotorsport_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7.2.4
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - motor-net
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - motor-net
+
+networks:
+  motor-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
