@@ -43,3 +43,12 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 ```
+
+### 3️⃣ Executar a aplicação
+```bash
+./mvnw spring-boot:run
+```
+## ou
+```bash
+mvn spring-boot:run
+````
