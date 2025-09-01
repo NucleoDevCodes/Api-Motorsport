@@ -77,3 +77,13 @@ PUT /sobre/{id} → atualizar contéudo
 
 DELETE /sobre/{id} → remover contéudo
 
+## Especificação Tecnica
+
+POST /especificacao  -> cadastra especificacao
+
+GET /especificacao/{id} → buscar especificacao por ID
+
+PUT /especificacao/{id} → atualizar especificacao
+
+DELETE /especificacao/{id} → remover especificacao
+
