@@ -148,3 +148,46 @@ docker run --name motorsport-api \
   --link motorsport-db \
   api-motorsport
 ````
+
+### 3️⃣ Usando Docker Compose
+
+Crie o arquivo docker-compose.yml:
+````bash
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    container_name: motorsport-db
+    environment:
+      POSTGRES_USER: motorsport
+      POSTGRES_PASSWORD: motorsport
+      POSTGRES_DB: motorsport
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: motorsport-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/motorsport
+      SPRING_DATASOURCE_USERNAME: motorsport
+      SPRING_DATASOURCE_PASSWORD: motorsport
+
+volumes:
+  postgres_data:
+````
+
+Rodar tudo:
+````bash
+docker-compose up -d
+````
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT.
