@@ -107,3 +107,44 @@ Rodar os testes unitários:
 ````bash
 mvn test
 ````
+
+## 🐳 Rodando com Docker
+### 1️⃣ Rodar apenas o banco 
+````bash
+docker run --name motorsport-db \
+  -e POSTGRES_USER=motorsport \
+  -e POSTGRES_PASSWORD=motorsport \
+  -e POSTGRES_DB=motorsport \
+  -p 5432:5432 \
+  -d postgres:15
+````
+
+### 2️⃣ Criar imagem da API
+
+Na raiz do projeto, crie um Dockerfile:
+
+````bash
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY target/Api-Motorsport-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+````
+
+Build da imagem:
+
+````bash
+mvn clean package -DskipTests
+docker build -t api-motorsport .
+````
+
+Rodar a API conectando ao banco:
+````bash
+docker run --name motorsport-api \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://motorsport-db:5432/motorsport \
+  -e SPRING_DATASOURCE_USERNAME=motorsport \
+  -e SPRING_DATASOURCE_PASSWORD=motorsport \
+  -p 8080:8080 \
+  --link motorsport-db \
+  api-motorsport
+````
