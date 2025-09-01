@@ -52,3 +52,17 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 ```bash
 mvn spring-boot:run
 ````
+
+### Endpoints da API
+
+## Carros
+
+POST /carro → cadastrar carro
+
+GET /carro → listar carros
+
+GET /carro/{id} → buscar carro por ID
+
+PUT /carro/{id} → atualizar carro
+
+DELETE /carro/{id} → remover carro
