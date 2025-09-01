@@ -11,7 +11,6 @@ COPY pom.xml .
 COPY src src
 
 RUN chmod +x mvnw
-
 RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
@@ -25,4 +24,4 @@ RUN apt-get update && apt-get install -y wget tar && \
 
 COPY --from=builder /application/target/*.jar application.jar
 
-ENTRYPOINT ["dockerize", "-wait", "tcp://db:3306", "-timeout", "60s", "java", "-jar", "application.jar"]
+ENTRYPOINT ["sh", "-c", "dockerize -wait tcp://${DB_HOST}:${DB_PORT} -timeout 60s java -jar application.jar"]
