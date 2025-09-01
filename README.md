@@ -1,11 +1,11 @@
-# 🏎️ API Motorsport
+# API Motorsport
 
 API desenvolvida em **Java + Spring Boot** para gerenciamento de dados do Motorsport.  
 Banco de dados utilizado: **PostgreSQL**.  
 
 ---
 
-## 📌 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **Java 17+**
 - **Spring Boot 3**
@@ -25,3 +25,21 @@ git clone https://github.com/NucleoDevCodes/Api-Motorsport.git
 cd Api-Motorsport
 ```
 
+
+### 2️⃣ Configurar o banco PostgreSQL
+
+## Crie o banco no PostgreSQL:
+```bash
+CREATE DATABASE motorsport;
+````
+```bash
+Edite o arquivo src/main/resources/application.properties com suas credenciais:
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/motorsport
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+```
