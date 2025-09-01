@@ -98,3 +98,12 @@ GET /upload/{id} → buscar imagem por ID
 PUT /upload/{id} → atualizar imagem
 
 DELETE /upload/{id} → remover imagem
+
+
+###  🧪 Testes
+
+Rodar os testes unitários:
+
+````bash
+mvn test
+````
