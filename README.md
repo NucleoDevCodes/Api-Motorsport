@@ -66,3 +66,14 @@ GET /carro/{id} → buscar carro por ID
 PUT /carro/{id} → atualizar carro
 
 DELETE /carro/{id} → remover carro
+
+## Conteúdo
+
+POST /sobre  -> cadastra contéudo
+
+GET /sobre/{id} → buscar contéudo por ID
+
+PUT /sobre/{id} → atualizar contéudo
+
+DELETE /sobre/{id} → remover contéudo
+
