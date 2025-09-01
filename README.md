@@ -87,3 +87,14 @@ PUT /especificacao/{id} → atualizar especificacao
 
 DELETE /especificacao/{id} → remover especificacao
 
+## Upload
+
+POST /upload → cadastrar imagem
+
+GET /upload → listar imagens
+
+GET /upload/{id} → buscar imagem por ID
+
+PUT /upload/{id} → atualizar imagem
+
+DELETE /upload/{id} → remover imagem
