@@ -15,6 +15,8 @@ services:
         condition: service_started
     networks:
       - motor-net
+    tty: true
+    stdin_open: true
 
   motorsport-api-v2:
     container_name: motorsport-api-v2
@@ -32,6 +34,8 @@ services:
         condition: service_started
     networks:
       - motor-net
+    tty: true
+    stdin_open: true
 
   db:
     image: mysql:8.0
@@ -40,8 +44,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: motorsport_db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: admin
     ports:
       - "3307:3306"
     volumes:
@@ -49,11 +51,13 @@ services:
     networks:
       - motor-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-umotorsport_user", "-pmotorsport_pass"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padmin"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
+    tty: true
+    stdin_open: true
 
   redis:
     image: redis:7.2.4
@@ -61,6 +65,8 @@ services:
     restart: unless-stopped
     networks:
       - motor-net
+    tty: true
+    stdin_open: true
 
   adminer:
     image: adminer
@@ -70,6 +76,8 @@ services:
       - "8081:8080"
     networks:
       - motor-net
+    tty: true
+    stdin_open: true
 
 networks:
   motor-net:
