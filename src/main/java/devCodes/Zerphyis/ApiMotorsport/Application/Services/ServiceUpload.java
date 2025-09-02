@@ -1,6 +1,5 @@
 package devCodes.Zerphyis.ApiMotorsport.Application.Services;
 
-
 import devCodes.Zerphyis.ApiMotorsport.Application.Records.Upload.ResponseUpload;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.BadRequestException;
 import devCodes.Zerphyis.ApiMotorsport.Infra.Exceptions.FileUploadException;
@@ -26,19 +25,11 @@ public class ServiceUpload {
     private static final String UPLOAD_DIR = "uploads/";
     private final UploadRepository repository;
 
-
     @Transactional
     @Async
     public CompletableFuture<ResponseUpload> saveFile(MultipartFile file) {
         return CompletableFuture.supplyAsync(() -> {
-            if (file.isEmpty()) {
-                throw new BadRequestException("Arquivo vazio");
-            }
-
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || !originalFilename.matches(".*\\.(png|jpg|jpeg)$")) {
-                throw new BadRequestException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
-            }
+            validarArquivo(file);
 
             try {
                 Files.createDirectories(Paths.get(UPLOAD_DIR));
@@ -46,7 +37,7 @@ public class ServiceUpload {
                 throw new FileUploadException("Erro ao criar diretório de upload.");
             }
 
-            String fileName = System.currentTimeMillis() + "_" + originalFilename;
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(UPLOAD_DIR + fileName);
 
             try {
@@ -90,16 +81,9 @@ public class ServiceUpload {
             Upload existingUpload = repository.findById(id)
                     .orElseThrow(() -> new BadRequestException("Arquivo não encontrado com ID: " + id));
 
-            if (file.isEmpty()) {
-                throw new BadRequestException("Arquivo vazio");
-            }
+            validarArquivo(file);
 
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || !originalFilename.matches(".*\\.(png|jpg|jpeg)$")) {
-                throw new BadRequestException("Formato inválido. Apenas PNG, JPG e JPEG são permitidos.");
-            }
-
-            String fileName = System.currentTimeMillis() + "_" + originalFilename;
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(UPLOAD_DIR + fileName);
 
             try {
@@ -131,6 +115,17 @@ public class ServiceUpload {
                 throw new FileUploadException("Erro ao remover arquivo físico.");
             }
         });
+    }
+
+    private void validarArquivo(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new BadRequestException("Arquivo vazio");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BadRequestException("Formato inválido. Apenas arquivos de imagem são permitidos.");
+        }
     }
 
     private ResponseUpload toResponse(Upload upload) {
