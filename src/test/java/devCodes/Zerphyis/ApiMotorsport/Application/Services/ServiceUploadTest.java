@@ -59,6 +59,29 @@ class ServiceUploadTest {
     }
 
     @Test
+    void testSaveFileWithGif() {
+        MultipartFile file = new MockMultipartFile(
+                "file", "animation.gif", "image/gif", "dummy".getBytes()
+        );
+
+        Upload upload = new Upload();
+        upload.setId(2L);
+        upload.setNomeArquivo("123_animation.gif");
+        upload.setUrl("/uploads/123_animation.gif");
+        upload.setConteudo("image/gif");
+        upload.setTamanho(file.getSize());
+
+        when(repository.save(any(Upload.class))).thenReturn(upload);
+
+        ResponseUpload saved = service.saveFile(file).join();
+
+        assertNotNull(saved);
+        assertEquals("123_animation.gif", saved.nomeArquivo());
+        assertEquals("image/gif", saved.conteudo());
+        verify(repository, times(1)).save(any(Upload.class));
+    }
+
+    @Test
     void testSaveFileEmptyFile() {
         MultipartFile file = new MockMultipartFile("file", new byte[0]);
 
