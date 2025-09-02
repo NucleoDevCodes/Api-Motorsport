@@ -21,7 +21,7 @@ public class ControllerUpload {
     private final ServiceUpload service;
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<ResponseUpload>> uploadFile(@RequestParam("file") MultipartFile file) {
+    public CompletableFuture<ResponseEntity<ResponseUpload>> uploadFile(@RequestParam("File") MultipartFile file) {
         return service.saveFile(file)
                 .thenApply(upload -> ResponseEntity.status(HttpStatus.CREATED).body(upload));
     }
@@ -40,7 +40,7 @@ public class ControllerUpload {
 
     @PutMapping("/{id}")
     public CompletableFuture<ResponseEntity<ResponseUpload>> updateUpload(@PathVariable Long id,
-                                                                          @RequestParam("file") MultipartFile file) {
+                                                                          @RequestParam("File") MultipartFile file) {
         return service.updateFile(id, file)
                 .thenApply(ResponseEntity::ok);
     }
