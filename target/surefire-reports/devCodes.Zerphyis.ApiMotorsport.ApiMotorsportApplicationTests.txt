@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: devCodes.Zerphyis.ApiMotorsport.ApiMotorsportApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.327 s -- in devCodes.Zerphyis.ApiMotorsport.ApiMotorsportApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.103 s -- in devCodes.Zerphyis.ApiMotorsport.ApiMotorsportApplicationTests
